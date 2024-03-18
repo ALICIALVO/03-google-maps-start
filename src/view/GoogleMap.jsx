@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 const log = (...args) => console.log.apply(null, ["GoogleMap -->", ...args]);
 
-export default function GoogleMap({ lat, lng }) {
+export default function GoogleMap({ lat, lng, zoom }) {
   const map = useRef(null);
   const mapDiv = useRef(null);
 
@@ -10,7 +10,7 @@ export default function GoogleMap({ lat, lng }) {
 
     map.current = new Map(mapDiv.current, {
       center: { lat, lng },
-      zoom: 8,
+      zoom: zoom,
     });
   }
   useEffect(() => {
@@ -22,10 +22,17 @@ export default function GoogleMap({ lat, lng }) {
     log("useEffect >>>>");
     log("lat:", lat);
     log("lng:", lng);
+    log("zoom:", zoom);
     log("mapDiv:", mapDiv);
     log("<<<< useEffect");
     map.current.setCenter({ lat, lng });
-  }, [lat, lng]);
+    map.current.setZoom(zoom);
+  }, [lat, lng, zoom]);
+
+
+
 
   return <div ref={mapDiv} className="map-box" />;
 }
+
+
