@@ -8,17 +8,21 @@ export default function App() {
     lng: 150.644
   });
   const [zoom, setZoom] = useState(8);
+  const [marker, setMarker] = useState(null);
 
   function reposition(city) {
     switch (city) {
       case "tel aviv":
         setLatlng({ lat: 32.0042938, lng: 34.7615399 });
+        setMarker({ lat: 32.0042938, lng: 34.7615399 });
         break;
       case "london":
         setLatlng({ lat: 51.5074, lng: -0.1278 });
+        setMarker({ lat: 51.5074, lng: -0.1278 });
         break;
       case "paris":
         setLatlng({ lat: 48.8566, lng: 2.3522 });
+        setMarker({ lat: 48.8566, lng: 2.3522 });
         break;
       default:
         alert("Location not supported");
@@ -46,8 +50,9 @@ export default function App() {
           onChange={handleZoomChange}
         />
       </div>
-      <GoogleMap lat={latlng.lat} lng={latlng.lng} zoom={zoom} />
+      <GoogleMap lat={latlng.lat} lng={latlng.lng} zoom={zoom}  marker={marker}/>
 
     </div>
   );
 }
+
