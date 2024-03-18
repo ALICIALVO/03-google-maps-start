@@ -26,7 +26,7 @@ export default function App() {
   }
 
   function handleZoomChange(event) {
-    const newZoom = parseInt(event.target.value, 10);
+    const newZoom = Number(event.target.value);
     setZoom(newZoom);
   }
 
