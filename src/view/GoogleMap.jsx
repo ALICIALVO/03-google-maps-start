@@ -56,11 +56,18 @@ export default function GoogleMap({ lat, lng, zoom, location, markerReady, marke
   useEffect(() => {
     if (!map.current) return;
     map.current.setCenter({ lat, lng });
+
+    return () => {
+      // Cleanup code here, if needed
+    };
   }, [lat, lng]);
 
   useEffect(() => {
     if (!map.current) return;
     map.current.setZoom(zoom);
+    return () => {
+      // Cleanup code here, if needed
+    };
   }, [zoom]);
 
   function handleLocationError(browserHasGeolocation, pos) {
@@ -105,6 +112,10 @@ export default function GoogleMap({ lat, lng, zoom, location, markerReady, marke
   useEffect(() => {
     if (!map.current || !markerReady) return;
     addMarker();
+
+    return () => {
+      // Cleanup code here, if needed
+    };
   }, [markerReady]);
 
   return <div ref={mapDiv} className="map-box" />;
