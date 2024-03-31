@@ -49,6 +49,7 @@ body {
   flex-direction: column;
   height: 75vh;
   width: 80vw;
+  box-shadow: 1px 1px 20px rgb(255, 0, 200);
 }
 
 .headline {
@@ -198,4 +199,25 @@ button:active {
 }
 .dev {
   border: fuchsia 2px dashed;
+}
+
+.marker-div{
+  display: flex;
+  height: 5%;
+  width: 50%;
+  
+}
+span {
+  color: rgb(76, 144, 102);
+  font-size: 3rem;
+  font-weight: bold;
+  border: 2px rgb(222, 46, 242) solid;
+  border-radius: 0.8rem;
+
+  
+}
+
+.marker-input{
+  color: wheat;
+  background-color: rgb(247, 143, 219);
 }
