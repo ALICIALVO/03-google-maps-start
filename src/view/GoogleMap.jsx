@@ -1,93 +1,68 @@
 import { useEffect, useRef } from "react";
+
 const MAP_ID = import.meta.env.VITE_GOOGLE_MAPS_MAPID_KEY;
 
-const log = (...args) => console.log.apply(null, ["GoogleMap -->", ...args]);
-
-export default function GoogleMap({ lat, lng, zoom, location, markerReady, markerTitle, markerType }) {
+export default function GoogleMap({ lat, lng, zoom, markerReady, markerTitle, markerType }) {
   const map = useRef(null);
   const mapDiv = useRef(null);
 
-  
-    async function createMap() {
-      const { Map } = await window.google.maps.importLibrary("maps");
+  async function createMap() {
+    const { Map } = await window.google.maps.importLibrary("maps");
 
+    const center = { lat, lng };
 
-      const center = location ? { lat: location.lat, lng: location.lng } : { lat, lng };
+    map.current = new Map(mapDiv.current, {
+      center,
+      zoom: 8,
+      mapId: MAP_ID
+    });
 
-      map.current = new Map(mapDiv.current, {
-        center,
-        zoom: 8,
-        mapId: MAP_ID
-      });
+    if (!window.google || !window.google.maps) {
+      console.error("Google Maps JavaScript API is not loaded.");
+      return;
+    }
 
-      if (!window.google || !window.google.maps) {
-        console.error("Google Maps JavaScript API is not loaded.");
-        return;
-      }
-      
-      
-      
-      
-      if (navigator.geolocation && !location) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const pos = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            };
-            map.current.setCenter(pos);
-          },
-          () => {
-            handleLocationError(true, map.current.getCenter());
-          }
-          );
-        } else if (!location) {
-          // Browser doesn't support Geolocation
-          handleLocationError(false, map.current.getCenter());
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          map.current.setCenter(pos);
+          addMarker(pos);
+        },
+        () => {
+          handleLocationError(true);
         }
-      }
-      
-      useEffect(() => {
-      createMap();
-    }, []);
+      );
+    } else {
+      handleLocationError(false);
+    }
+  }
 
+  useEffect(() => {
+    createMap();
+  }, []);
 
-    
   useEffect(() => {
     if (!map.current) return;
     map.current.setCenter({ lat, lng });
-
-    return () => {
-      // Cleanup code here, if needed
-    };
   }, [lat, lng]);
 
   useEffect(() => {
     if (!map.current) return;
     map.current.setZoom(zoom);
-    return () => {
-      // Cleanup code here, if needed
-    };
   }, [zoom]);
 
-  function handleLocationError(browserHasGeolocation, pos) {
-    console.error(
-      browserHasGeolocation
-        ? "Error: The Geolocation service failed."
-        : "Error: Your browser doesn't support geolocation."
-    );
-    if (browserHasGeolocation && pos) {
-      map.current.setCenter(pos);
-    }
-  }
-  async function addMarker() {
-    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-    const marker = new AdvancedMarkerElement({
-      position: map.current.getCenter(),
+  async function addMarker(position) {
+    const { Marker } = await window.google.maps.importLibrary("marker");
+    const marker = new Marker({
+      position,
       map: map.current,
       title: markerTitle
     });
-    const { InfoWindow } = await google.maps.importLibrary("maps");
+    const { InfoWindow } = await window.google.maps.importLibrary("maps");
     const infoWindow = new InfoWindow({
       content: `
         <div style="text-align:center">
@@ -109,14 +84,14 @@ export default function GoogleMap({ lat, lng, zoom, location, markerReady, marke
       infoWindow.open(map.current, marker);
     });
   }
-  useEffect(() => {
-    if (!map.current || !markerReady) return;
-    addMarker();
 
-    return () => {
-      // Cleanup code here, if needed
-    };
-  }, [markerReady]);
+  function handleLocationError(browserHasGeolocation) {
+    console.error(
+      browserHasGeolocation
+        ? "Error: The Geolocation service failed."
+        : "Error: Your browser doesn't support geolocation."
+    );
+  }
 
   return <div ref={mapDiv} className="map-box" />;
 }
